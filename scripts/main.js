@@ -1,7 +1,7 @@
 'use strict';
+const postModal = document.querySelector(`.add-post-modal`);
 const addPost = document.querySelector(`#add-photo`);
 const createApost = document.querySelector(`#add-first-post`);
-const postModal = document.querySelector(`.add-post-modal`);
 
 const body = document.querySelector(`body`);
 const bodyOverlay = document.querySelector(`.body-overlay`);
@@ -9,15 +9,15 @@ const bodyOverlay = document.querySelector(`.body-overlay`);
 const step1 = document.querySelector(`.add-post-modal__step-1`);
 const step2 = document.querySelector(`.add-post-modal__step-2`);
 const modalFooter = document.querySelector(`.modal__footer`);
-
-const publish = document.querySelector(`#post-publish`);
-const uploadedPhoto = document.querySelector(`#uploaded-photo`);
-let image = document.querySelector('#uploaded-photo');
 const fileUpload = document.querySelector('#file-upload');
+const publish = document.querySelector(`#post-publish`);
+const image = document.querySelector('#uploaded-photo');
+let file = null;
+const alertSuccess = document.querySelector(`#alert-success`);
+const alertFail = document.querySelector(`#alert-fail`);
 
 addPost.addEventListener('click', openModalWindow);
 createApost.addEventListener('click', openModalWindow);
-
 
 function openModalWindow() {
     postModal.classList.add(`active`);
@@ -26,57 +26,54 @@ function openModalWindow() {
     fileUpload.accept = ".png, .jpg, .jpeg";
 }
 
-
-bodyOverlay.addEventListener('click', сloseModalWindow);
-
-function сloseModalWindow() {
+bodyOverlay.addEventListener('click', () => {
     postModal.classList.remove(`active`);
     body.classList.remove(`with-overlay`);
     bodyOverlay.classList.remove(`active`);
-}
+})
 
-fileUpload.addEventListener('change', updateImageDisplay);
-
-function updateImageDisplay() {
-    image.src = URL.createObjectURL(fileUpload.files[0]);
-    image.style.display = "block";
+fileUpload.addEventListener('change', () => {
+    file = fileUpload.files[0];
+    image.src = URL.createObjectURL(file)
     if (fileUpload) {
-        console.log(fileUpload);
         step1.classList.add(`hidden`);
         step2.classList.remove(`hidden`);
-        step2.classList.add('active');
         modalFooter.classList.remove(`hidden`);
     }
+});
 
-}
-
-function notifyOfSuccess() {
-    const alertSuccess = document.querySelector(`#alert-success`);
+function notifyOfSuccess(header, paragraf) {
     const success = alertSuccess.content.cloneNode(true);
-    bodyOverlay.append(success);
+
+    success.querySelector('h4').textContent = header;
+    success.querySelector('p').textContent = paragraf;
 
     setTimeout(() => {
         bodyOverlay.remove(success);
-    }, 2000)
+    }, 2000);
+
+    return success
 }
 
-
 function reportAnError() {
-    const alertFail = document.querySelector(`#alert-fail`);
     const mistake = alertFail.content.cloneNode(true);
-    bodyOverlay.append(mistake);
+
+    mistake.querySelector('h4').textContent = header;
+    mistake.querySelector('p').textContent = paragraf;
 
     setTimeout(() => {
         bodyOverlay.remove(mistake);
-    }, 2000)
+    }, 2000);
+
+    return mistake
 }
 
-publish.addEventListener("click", (event) => {
+publish.addEventListener("click", () => {
     const postText = document.querySelector(`#post-text`);
     const postHashtags = document.querySelector(`#post-hashtags`);
 
     const formData = new FormData();
-    formData.append("image", fileUpload.files[0]);
+    formData.append("image", file);
     formData.append("text", postText.value);
     formData.append("tags", postHashtags.value);
 
@@ -87,22 +84,20 @@ publish.addEventListener("click", (event) => {
             },
             body: formData,
         })
-        .then((result) => {
-            return result.json();
-        })
-        .then((data) => {
-            console.log(data);
-            notifyOfSuccess();
+        .then(() => {
+            postModal.classList.remove("active");
+            const notificationText = notifyOfSuccess('Фото успешно добавлено', '');
+            bodyOverlay.append(notificationText);
         })
         .catch((error) => {
             console.log(error);
-            reportAnError()
-        });
-
-    //document.querySelector(".form").reset();
-
-    const inputs = document.querySelectorAll('textarea');
-    for (let i = 0; i < inputs.length; i++) {
-        inputs[i].value = '';
-    };
+            const notificationText = notifyOfSuccess('Произошла ошибка при добавлении фото', 'Повторите попытку');
+            bodyOverlay.append(notificationText);
+        })
+        .finally(() => {
+            fileUpload.value = "";
+            postHashtags.value = "";
+            postText.value = "";
+            image.src = "";
+        })
 })
