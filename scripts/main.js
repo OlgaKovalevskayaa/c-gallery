@@ -17,17 +17,16 @@ const alertFail = document.querySelector(`#alert-fail`);
 const postText = document.querySelector(`#post-text`);
 const postHashtags = document.querySelector(`#post-hashtags`);
 
+const authorization = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjc1Njk5MzE5LCJpYXQiOjE2NzA4NjA5MTksImp0aSI6IjdlYTM3Y2E0OTg0NDRhYWZhNDExNjU0NWE2ZjdjMDUxIiwidXNlcl9pZCI6MjR9.LICWgUcTIanVA4xHrvCAyZsovRGY_mq1gPigA8OrsDw";
+const addressPost = "https://c-gallery.polinashneider.space/api/v1/posts/";
+const addressGet = "https://c-gallery.polinashneider.space/api/v1/users/me/posts/";
+
+export { authorization, addressPost, addressGet }
+
 addPost.addEventListener('click', openModalWindow);
 createApost.addEventListener('click', openModalWindow);
 
-function reopenTheForm() {
-    step1.classList.remove(`hidden`);
-    step2.classList.add(`hidden`);
-    modalFooter.classList.add(`hidden`);
-}
-
 function openModalWindow() {
-    reopenTheForm()
     body.classList.add(`with-overlay`);
     postModal.classList.add(`active`);
     bodyOverlay.classList.add(`active`);
@@ -38,6 +37,8 @@ bodyOverlay.addEventListener('click', () => {
     postModal.classList.remove(`active`);
     body.classList.remove(`with-overlay`);
     bodyOverlay.classList.remove(`active`);
+    //
+    previewPostModal.classList.remove(`active`);
 })
 
 fileUpload.addEventListener('change', () => {
@@ -84,10 +85,10 @@ publish.addEventListener("click", () => {
     formData.append("text", text);
     formData.append("tags", hashtag);
 
-    fetch("https://c-gallery.polinashneider.space/api/v1/posts/", {
+    fetch(`${addressPost}`, {
             method: "POST",
             headers: {
-                "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjc1Njk5MzE5LCJpYXQiOjE2NzA4NjA5MTksImp0aSI6IjdlYTM3Y2E0OTg0NDRhYWZhNDExNjU0NWE2ZjdjMDUxIiwidXNlcl9pZCI6MjR9.LICWgUcTIanVA4xHrvCAyZsovRGY_mq1gPigA8OrsDw",
+                "Authorization": `${authorization}`,
             },
             body: formData,
         })
@@ -96,8 +97,7 @@ publish.addEventListener("click", () => {
             const notificationTextSuccess = notifyOfSuccess('Фото успешно добавлено', '');
             bodyOverlay.append(notificationTextSuccess);
         })
-        .catch((error) => {
-            console.log(error);
+        .catch(() => {
             const noticeTextError = notifyOfSuccess('Произошла ошибка при добавлении фото', 'Повторите попытку');
             bodyOverlay.append(noticeTextError);
         })
@@ -106,8 +106,12 @@ publish.addEventListener("click", () => {
             postHashtags.value = "";
             postText.value = "";
             image.src = "";
+
+            step1.classList.remove(`hidden`);
+            step2.classList.add(`hidden`);
+            modalFooter.classList.add(`hidden`);
         })
 })
 
-import { weekTwo } from './week_2.js';
-weekTwo();
+import { gettingPosts } from './getting_posts.js';
+gettingPosts();
