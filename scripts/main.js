@@ -17,11 +17,13 @@ const alertFail = document.querySelector(`#alert-fail`);
 const postText = document.querySelector(`#post-text`);
 const postHashtags = document.querySelector(`#post-hashtags`);
 
-const authorization = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjc1Njk5MzE5LCJpYXQiOjE2NzA4NjA5MTksImp0aSI6IjdlYTM3Y2E0OTg0NDRhYWZhNDExNjU0NWE2ZjdjMDUxIiwidXNlcl9pZCI6MjR9.LICWgUcTIanVA4xHrvCAyZsovRGY_mq1gPigA8OrsDw";
-const addressPost = "https://c-gallery.polinashneider.space/api/v1/posts/";
-const addressGet = "https://c-gallery.polinashneider.space/api/v1/users/me/posts/";
+const AUTHORIZATION = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjc1Njk5MzE5LCJpYXQiOjE2NzA4NjA5MTksImp0aSI6IjdlYTM3Y2E0OTg0NDRhYWZhNDExNjU0NWE2ZjdjMDUxIiwidXNlcl9pZCI6MjR9.LICWgUcTIanVA4xHrvCAyZsovRGY_mq1gPigA8OrsDw";
+const ADDRESSPOST = "https://c-gallery.polinashneider.space/api/v1/posts/";
+const ADDRESSGET = "https://c-gallery.polinashneider.space/api/v1/users/me/posts/";
 
-export { authorization, addressPost, addressGet }
+const previewPostModal = document.querySelector(`.preview-post-modal`);
+
+export { AUTHORIZATION, ADDRESSPOST, ADDRESSGET, body, bodyOverlay, previewPostModal }
 
 addPost.addEventListener('click', openModalWindow);
 createApost.addEventListener('click', openModalWindow);
@@ -85,10 +87,10 @@ publish.addEventListener("click", () => {
     formData.append("text", text);
     formData.append("tags", hashtag);
 
-    fetch(`${addressPost}`, {
+    fetch(`${ADDRESSPOST}`, {
             method: "POST",
             headers: {
-                "Authorization": `${authorization}`,
+                "Authorization": `${AUTHORIZATION}`,
             },
             body: formData,
         })
@@ -98,7 +100,7 @@ publish.addEventListener("click", () => {
             bodyOverlay.append(notificationTextSuccess);
         })
         .catch(() => {
-            const noticeTextError = notifyOfSuccess('Произошла ошибка при добавлении фото', 'Повторите попытку');
+            const noticeTextError = reportAnError('Произошла ошибка при добавлении фото', 'Повторите попытку');
             bodyOverlay.append(noticeTextError);
         })
         .finally(() => {
