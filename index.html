@@ -37,6 +37,18 @@
             <div class="photos__info">
                 <span class="photos__info-title">Фото</span>
                 <span><span id="photo-count">0</span> публикаций</span>
+
+            </div>
+            <div class="empty-content photos__empty-content hidden">
+                <img class="empty-content__placeholder" src="./assets/photos.svg" />
+                <h2 class="empty-content__title">У вас пока нет публикаций</h2>
+                <p class="empty-content__text">Создайте свою первую публикацию</p>
+                <button type="button" id="add-first-post" class="empty-content__button">
+            Создать публикацию
+          </button>
+            </div>
+            <div class="photos__content">
+
             </div>
             <div class="empty-content photos__empty-content hidden">
                 <img class="empty-content__placeholder" src="./assets/photos.svg" />
@@ -183,6 +195,7 @@
                     </div>
                 </div>
             </div>
+
         </main>
         <footer class="footer">© 2022 codegirl_school</footer>
         <!-- Add post modal start -->
@@ -218,6 +231,7 @@
                 <button class="add-post-modal__button-publish" id="post-publish" type="button">
             Опубликовать
           </button>
+
             </div>
         </div>
         <!-- Add post modal end -->
@@ -227,6 +241,17 @@
             <div class="modal__header edit-bio-modal__header">
                 Персональные данные
             </div>
+
+            </div>
+        </div>
+        <!-- Add post modal end -->
+
+        <!-- Edit bio modal start -->
+        <div class="modal edit-bio-modal">
+            <div class="modal__header edit-bio-modal__header">
+                Персональные данные
+            </div>
+
             <div class="modal__content">
                 <div class="account-info">
                     <img src="./assets/avatar-small.svg" alt="codegirl_school" />
@@ -261,6 +286,7 @@
                 <button id="bio-discard" class="edit-bio-modal__button-cancel" type="button">
             Отменить
           </button>
+
             </div>
         </div>
         <!-- Edit bio modal end -->
@@ -277,6 +303,23 @@
                 </div>
                 <button type="button" id="delete-post" class="delete-post-button">Удалить</button>
             </div>
+            </div>
+        </div>
+        <!-- Edit bio modal end -->
+
+        <!-- Preview post modal start -->
+        <div class="modal preview-post-modal">
+            <div class="preview-post-modal__header">
+                <div class="account-info">
+                    <img src="./assets/avatar-small.svg" alt="codegirl_school" />
+                    <div>
+                        <span>codegirl_school</span>
+                        <span class="account-info__time">15 октября</span>
+                    </div>
+                </div>
+                <button type="button" id="delete-post" class="delete-post-button">Удалить</button>
+            </div>
+
             <div class="modal__content">
                 <img id="post-photo" width="440" src="./img/photo-post.jpg" alt="" />
                 <div class="statistics">
@@ -321,9 +364,15 @@
             </div>
         </div>
         <!-- Preview post modal end -->
+
+        </div>
+        <!-- Alert notifications start -->
+        <template id="alert-success">
+
     </div>
     <!-- Alert notifications start -->
     <template id="alert-success">
+
       <div class="alert alert--success">
         <div class="alert__ellipsis"></div>
         <div class="alert__icon">
@@ -335,7 +384,7 @@
         </div>
       </div>
     </template>
-    <template id="alert-fail">
+        <template id="alert-fail">
       <div class="alert alert--error hidden">
         <div class="alert__ellipsis"></div>
         <div class="alert__icon">
@@ -347,10 +396,10 @@
         </div>
       </div>
     </template>
-    <!-- Alert notifications end -->
+        <!-- Alert notifications end -->
 
-    <!-- Grid post template start -->
-    <template id="post-template">
+        <!-- Grid post template start -->
+        <template id="post-template">
       <div class="post">
         <img src="" />
         <div class="overlay">
@@ -367,8 +416,13 @@
         </div>
       </div>
     </template>
+
+        <!-- Grid post template end -->
+        <script type="module" src="scripts/main.js"></script>
+
     <!-- Grid post template end -->
     <script type="module" src="scripts/main.js"></script>
+
 </body>
 
 </html>
