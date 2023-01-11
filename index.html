@@ -163,7 +163,7 @@
                 </p>
                 <div class="comments">
                     <div class="comments__content">
-                        <div class="comments__item">
+                        <div class="comments__item  hidden">
                             <img class="comments__item-avatar" src="./assets/sample-avatar.jpg" width="40" alt="" />
                             <div class="comments__item-text">
                                 <h3 class="comments__item-nickname">anastas_kvl</h3>
@@ -174,12 +174,13 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="comments__add">
                         <img src="./assets/avatar-small.svg" alt="" />
                         <textarea rows="1" name="post-comment" id="post-comment" placeholder="Добавить комментарий"></textarea>
                         <button type="button" class="comments-button">
-                <i class="fa fa-paper-plane"></i>
-              </button>
+                        <i class="fa fa-paper-plane"></i>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -216,9 +217,9 @@
         <!-- Grid post template start -->
         <template id="post-template">
       <div class="post">
-        <img src="" />
-        <div class="overlay">
-          <div class="overlay__content">
+            <img src="" />
+            <div class="overlay">
+            <div class="overlay__content">
             <div class="likes">
               <i class="fa fa-heart"></i>
               <span>0</span>
@@ -231,7 +232,24 @@
         </div>
       </div>
     </template>
-        <!-- Grid post template end -->
+        <!-- Grid post template start -->
+
+        <!-- Show comments template end -->
+        <template id="show_comments">
+            <div class="comments__content">
+                <div class="comments__item">
+                <img class="comments__item-avatar" src="./assets/sample-avatar.jpg" width="40" alt="" />
+                <div class="comments__item-text">
+                    <h3 class="comments__item-nickname">anastas_kvl</h3>
+                    <p class="comments__item-comment">
+                        Думаю, что еще SEO-специалисты пользуются этими языками, интересный пост!👌
+                    </p>
+                    <span class="comments__item-time">15 октября в 21:40</span>
+                </div>
+                </div>
+            </div>
+        </template>
+        <!-- Show comments  template end -->
         <script type="module" src="scripts/main.js"></script>
 </body>
 

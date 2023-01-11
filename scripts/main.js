@@ -16,14 +16,14 @@ const alertSuccess = document.querySelector(`#alert-success`);
 const alertFail = document.querySelector(`#alert-fail`);
 const postText = document.querySelector(`#post-text`);
 const postHashtags = document.querySelector(`#post-hashtags`);
-
-const AUTHORIZATION = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjc1Njk5MzE5LCJpYXQiOjE2NzA4NjA5MTksImp0aSI6IjdlYTM3Y2E0OTg0NDRhYWZhNDExNjU0NWE2ZjdjMDUxIiwidXNlcl9pZCI6MjR9.LICWgUcTIanVA4xHrvCAyZsovRGY_mq1gPigA8OrsDw";
-const ADDRESSPOST = "https://c-gallery.polinashneider.space/api/v1/posts/";
-const ADDRESSGET = "https://c-gallery.polinashneider.space/api/v1/users/me/posts/";
-
 const previewPostModal = document.querySelector(`.preview-post-modal`);
+const AUTHORIZATION = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjc1Njk5MzE5LCJpYXQiOjE2NzA4NjA5MTksImp0aSI6IjdlYTM3Y2E0OTg0NDRhYWZhNDExNjU0NWE2ZjdjMDUxIiwidXNlcl9pZCI6MjR9.LICWgUcTIanVA4xHrvCAyZsovRGY_mq1gPigA8OrsDw";
+const ADDRESS_POST = "https://c-gallery.polinashneider.space/api/v1/posts/";
+const ADDRESS_GET = "https://c-gallery.polinashneider.space/api/v1/users/me/posts/";
+const COMMENTS = "https://c-gallery.polinashneider.space/api/v1/comments/";
 
-export { AUTHORIZATION, ADDRESSPOST, ADDRESSGET, body, bodyOverlay, previewPostModal }
+
+export { AUTHORIZATION, ADDRESS_POST, ADDRESS_GET, body, bodyOverlay, previewPostModal, COMMENTS }
 
 addPost.addEventListener('click', openModalWindow);
 createApost.addEventListener('click', openModalWindow);
@@ -87,10 +87,10 @@ publish.addEventListener("click", () => {
     formData.append("text", text);
     formData.append("tags", hashtag);
 
-    fetch(`${ADDRESSPOST}`, {
+    fetch(ADDRESS_POST, {
             method: "POST",
             headers: {
-                "Authorization": `${AUTHORIZATION}`,
+                "Authorization": AUTHORIZATION,
             },
             body: formData,
         })
