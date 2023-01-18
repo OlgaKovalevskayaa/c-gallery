@@ -23,7 +23,7 @@ const ADDRESS_GET = "https://c-gallery.polinashneider.space/api/v1/users/me/post
 const COMMENTS = "https://c-gallery.polinashneider.space/api/v1/comments/";
 
 
-export { AUTHORIZATION, ADDRESS_POST, ADDRESS_GET, body, bodyOverlay, previewPostModal, COMMENTS }
+export { AUTHORIZATION, ADDRESS_POST, ADDRESS_GET, body, bodyOverlay, COMMENTS, alertSuccess }
 
 addPost.addEventListener('click', openModalWindow);
 createApost.addEventListener('click', openModalWindow);
@@ -39,7 +39,6 @@ bodyOverlay.addEventListener('click', () => {
     postModal.classList.remove(`active`);
     body.classList.remove(`with-overlay`);
     bodyOverlay.classList.remove(`active`);
-    //
     previewPostModal.classList.remove(`active`);
 })
 
@@ -53,7 +52,7 @@ fileUpload.addEventListener('change', () => {
     }
 });
 
-function notifyOfSuccess(header, paragraf) {
+export function notifyOfSuccess(header, paragraf) {
     const success = alertSuccess.content.cloneNode(true);
 
     success.querySelector('h4').textContent = header;
@@ -65,6 +64,7 @@ function notifyOfSuccess(header, paragraf) {
 
     return success
 }
+
 
 function reportAnError(header, paragraf) {
     const mistake = alertFail.content.cloneNode(true);

@@ -1,28 +1,31 @@
-import { AUTHORIZATION, ADDRESS_GET, body, bodyOverlay, previewPostModal, COMMENTS } from './main.js'
+import { AUTHORIZATION, ADDRESS_GET, body, bodyOverlay, COMMENTS, alertSuccess } from './main.js'
+import { notifyOfSuccess } from './main.js';
+const emptyContent = document.querySelector(`.empty-content`);
+const photosContent = document.querySelector(`.photos__content`);
+const postTemplate = document.querySelector(`#post-template`);
+const photoCount = document.querySelector(`#photo-count`);
+let counter = null;
+const previewPostModal = document.querySelector(`.preview-post-modal`);
+const postPhoto = previewPostModal.querySelector("#post-photo");
+const postText = previewPostModal.querySelector(".post-text");
+const postHashtags = previewPostModal.querySelector(".post-hashtags");
+const infoTime = previewPostModal.querySelector(".account-info__time");
+const deletePost = document.querySelector(`#delete-post`);
+
+const faHeart = document.querySelector(`.fa-heart`);
+const statisticsLikes = document.querySelector(`.statistics__likes`);
+const statisticsLikesSpan = document.querySelector(`.statistics__likes span`);
+
+const commentsContent = document.querySelector(`.comments__content`);
+const commentsItem = document.querySelector(`.comments__item`);
+const statisticsCommentsspan = document.querySelector(`.statistics__comments span`);
+const postComment = document.querySelector(`#post-comment`);
+const commentsButton = document.querySelector(`.comments-button`);
+const showComments = document.querySelector('#show_comments');
+let resultDate = null;
+let resultTime = null;
 
 export function gettingPosts() {
-    const emptyContent = document.querySelector(`.empty-content`);
-    const photosContent = document.querySelector(`.photos__content`);
-    const postTemplate = document.querySelector(`#post-template`);
-    const photoCount = document.querySelector(`#photo-count`);
-    let counter = null;
-    const postPhoto = previewPostModal.querySelector("#post-photo");
-    const postText = previewPostModal.querySelector(".post-text");
-    const postHashtags = previewPostModal.querySelector(".post-hashtags");
-    const infoTime = previewPostModal.querySelector(".account-info__time");
-    const deletePost = document.querySelector(`#delete-post`);
-
-    const faHeart = document.querySelector(`.fa-heart`);
-    const statisticsLikes = document.querySelector(`.statistics__likes`);
-    const statisticsLikesSpan = document.querySelector(`.statistics__likes span`);
-
-    const commentsContent = document.querySelector(`.comments__content`);
-    const commentsItem = document.querySelector(`.comments__item`);
-    const statisticsCommentsspan = document.querySelector(`.statistics__comments span`);
-    const postComment = document.querySelector(`#post-comment`);
-    const commentsButton = document.querySelector(`.comments-button`);
-    const showComments = document.querySelector('#show_comments');
-
 
     fetch(ADDRESS_GET, {
             method: 'GET',
@@ -40,34 +43,58 @@ export function gettingPosts() {
             obj.forEach((item) => {
                 const addPost = postAdd(item.image, item.likes, item.comments);
                 photosContent.append(addPost);
+
                 addPost.addEventListener("click", () => {
-                    openModal(item.image, item.text, item.tags, resultDate, item.id, item.likes, item.comments.length, item.text);
+                    openModal(item.image, item.text, item.tags, resultDate, item.id, item.likes, item.comments.length);
                 });
 
-                const date1 = new Date(item.created_at);
-                let date = date1.getDate();
-                let month = date1.getMonth();
-                let year = date1.getFullYear();
+                function changeDate() {
+                    const newDate = new Date(item.created_at);
 
-                if (date < 10) {
-                    date = '0' + date;
+                    let date = newDate.getDate();
+                    let month = newDate.getMonth();
+                    let year = newDate.getFullYear();
+
+                    if (date < 10) {
+                        date = '0' + date;
+                    }
+                    if (month < 10) {
+                        month = '0' + month;
+                    }
+                    return resultDate = date + '.' + month + '.' + year;
                 }
-                if (month < 10) {
-                    month = '0' + month;
+                changeDate()
+
+                function changeTime() {
+                    const newDate = new Date(item.created_at);
+
+                    let hours = newDate.getHours();
+                    let minutes = newDate.getMinutes();
+
+                    if (hours < 10) {
+                        hours = '0' + hours;
+                    }
+                    if (minutes < 10) {
+                        minutes = '0' + minutes;
+                    }
+
+                    return resultTime = hours + ':' + minutes;
                 }
-                let resultDate = date + '.' + month + '.' + year;
+                changeTime()
 
                 //Отображение комментариев
-                function get(comment) {
-                    const clonPost = showComments.content.cloneNode(true);
-                    clonPost.querySelector(".comments__item-comment").textContent = comment;
-                    clonPost.querySelector(".comments__item-nickname").textContent = 'No name';
-                    return clonPost;
-                }
                 item.comments.forEach((item) => {
-                    console.log(item.text);
-                    const ghjk = get(item.text)
-                    commentsContent.append(ghjk)
+                    const oneСomment = get(item.text, item.user.nickname, item.user.photo, item.created_at);
+                    commentsContent.append(oneСomment);
+
+                    function get(text, nickname, photo, time) {
+                        const clonPost = showComments.content.cloneNode(true);
+                        clonPost.querySelector(".comments__item-comment").textContent = text;
+                        clonPost.querySelector(".comments__item-nickname").textContent = nickname;
+                        clonPost.querySelector(".comments__item-avatar").src = photo;
+                        clonPost.querySelector(".comments__item-time").textContent = `${changeDate(time)} в ${changeTime(time)}`;
+                        return clonPost;
+                    }
                 });
             });
 
@@ -79,15 +106,15 @@ export function gettingPosts() {
                 return clonPost;
             }
 
-            function openModal(image, text, tags, created_at, id, likes, comments) {
+            function openModal(image, text, tags, created_at, id, likes, comments_length) {
                 postPhoto.src = image;
                 postText.textContent = text;
                 postHashtags.textContent = tags;
                 infoTime.textContent = created_at;
                 statisticsLikesSpan.textContent = likes;
-                statisticsCommentsspan.textContent = comments;
-                let DELETE = `https://c-gallery.polinashneider.space/api/v1/users/me/posts/${id}/`;
-                let LIKE = `https://c-gallery.polinashneider.space/api/v1/posts/${id}/like/`;
+                statisticsCommentsspan.textContent = comments_length;
+                const DELETE = `https://c-gallery.polinashneider.space/api/v1/users/me/posts/${id}/`;
+                const LIKE = `https://c-gallery.polinashneider.space/api/v1/posts/${id}/like/`;
 
                 //поставить лайк
                 faHeart.addEventListener('click', function() {
@@ -108,7 +135,8 @@ export function gettingPosts() {
                             statisticsLikesSpan.textContent = ++statisticsLikesSpan.textContent;
                         })
                         .catch(() => {
-                            alert('Попробуйте в другой раз');
+                            const addLikeError = notifyOfSuccess('Попробуйте в другой раз', '');
+                            bodyOverlay.append(addLikeError);
                         })
                 });
 
@@ -122,7 +150,9 @@ export function gettingPosts() {
                         })
                         .then(() => {
                             previewPostModal.classList.remove(`active`);
-                            alert('Пост успешно удален');
+                            const postDeleted = notifyOfSuccess('Пост успешно удален', '');
+                            bodyOverlay.append(postDeleted);
+
                             //перерисовка поста
                             fetch(ADDRESS_GET, {
                                     method: 'GET',
@@ -135,7 +165,6 @@ export function gettingPosts() {
                                 })
                                 .then((data) => {
                                     photosContent.innerHTML = "";
-
                                     data.forEach((item) => {
                                         const redrawPosts = postAdd(item.image, item.likes, item.comments);
                                         photosContent.append(redrawPosts);
@@ -147,7 +176,6 @@ export function gettingPosts() {
                         })
                         .finally(() => {
                             body.classList.remove('with-overlay');
-                            bodyOverlay.classList.remove('active');
                         })
                 });
 
@@ -170,11 +198,11 @@ export function gettingPosts() {
                         .then(() => {
                             const postCommentText = document.querySelector(`#post-comment`).value;
                             if (postCommentText == '') {
-                                alert('Вы забыли ввести текст');
                                 return false;
                             } else {
                                 alert("Запись успешно внесена");
-                                commentsItem.textContent = postCommentText;
+                                //commentsItem.textContent = postCommentText;
+
                             }
                             return true;
                         })
