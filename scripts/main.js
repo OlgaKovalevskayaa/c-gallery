@@ -22,8 +22,7 @@ const ADDRESS_POST = "https://c-gallery.polinashneider.space/api/v1/posts/";
 const ADDRESS_GET = "https://c-gallery.polinashneider.space/api/v1/users/me/posts/";
 const COMMENTS = "https://c-gallery.polinashneider.space/api/v1/comments/";
 
-
-export { AUTHORIZATION, ADDRESS_POST, ADDRESS_GET, body, bodyOverlay, COMMENTS, alertSuccess }
+export { AUTHORIZATION, ADDRESS_POST, ADDRESS_GET, body, bodyOverlay, COMMENTS }
 
 addPost.addEventListener('click', openModalWindow);
 createApost.addEventListener('click', openModalWindow);
@@ -52,7 +51,7 @@ fileUpload.addEventListener('change', () => {
     }
 });
 
-export function notifyOfSuccess(header, paragraf) {
+export function showТotification(header, paragraf) {
     const success = alertSuccess.content.cloneNode(true);
 
     success.querySelector('h4').textContent = header;
@@ -65,19 +64,6 @@ export function notifyOfSuccess(header, paragraf) {
     return success
 }
 
-
-function reportAnError(header, paragraf) {
-    const mistake = alertFail.content.cloneNode(true);
-
-    mistake.querySelector('h4').textContent = header;
-    mistake.querySelector('p').textContent = paragraf;
-
-    setTimeout(() => {
-        bodyOverlay.remove();
-    }, 2000);
-
-    return mistake
-}
 
 publish.addEventListener("click", () => {
     const text = postText.value;
@@ -96,11 +82,11 @@ publish.addEventListener("click", () => {
         })
         .then(() => {
             postModal.classList.remove("active");
-            const notificationTextSuccess = notifyOfSuccess('Фото успешно добавлено', '');
+            const notificationTextSuccess = showТotification('Фото успешно добавлено', '');
             bodyOverlay.append(notificationTextSuccess);
         })
         .catch(() => {
-            const noticeTextError = reportAnError('Произошла ошибка при добавлении фото', 'Повторите попытку');
+            const noticeTextError = showТotification('Произошла ошибка при добавлении фото', 'Повторите попытку');
             bodyOverlay.append(noticeTextError);
         })
         .finally(() => {
@@ -115,5 +101,5 @@ publish.addEventListener("click", () => {
         })
 })
 
-import { gettingPosts } from './getting_posts.js';
+import { gettingPosts } from './getting-posts.js';
 gettingPosts();

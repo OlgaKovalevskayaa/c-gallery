@@ -1,5 +1,5 @@
-import { AUTHORIZATION, ADDRESS_GET, body, bodyOverlay, COMMENTS, alertSuccess } from './main.js'
-import { notifyOfSuccess } from './main.js';
+import { AUTHORIZATION, ADDRESS_POST, ADDRESS_GET, body, bodyOverlay, COMMENTS } from './main.js'
+import { showТotification } from './main.js';
 const emptyContent = document.querySelector(`.empty-content`);
 const photosContent = document.querySelector(`.photos__content`);
 const postTemplate = document.querySelector(`#post-template`);
@@ -24,6 +24,70 @@ const commentsButton = document.querySelector(`.comments-button`);
 const showComments = document.querySelector('#show_comments');
 let resultDate = null;
 let resultTime = null;
+const fragment = new DocumentFragment();
+//const DELETE = `https://c-gallery.polinashneider.space/api/v1/users/me/posts/${id}/`;
+//const LIKE = `https://c-gallery.polinashneider.space/api/v1/posts/${id}/like/`;
+
+function postAdd(item) {
+    const clonPost = postTemplate.content.firstElementChild.cloneNode(true);
+    clonPost.querySelector("img").src = item.image;
+    clonPost.querySelector(".likes span").textContent = item.likes;
+    clonPost.querySelector(".comments span").textContent = item.comments.length;
+    return clonPost;
+}
+
+function getComent(text, nickname, photo, created_at) {
+    const clonPost = showComments.content.cloneNode(true);
+    clonPost.querySelector(".comments__item-comment").textContent = text;
+    clonPost.querySelector(".comments__item-nickname").textContent = nickname;
+    clonPost.querySelector(".comments__item-avatar").src = photo;
+    clonPost.querySelector(".comments__item-time").textContent = `${changeDate( created_at)}  в ${changeTime( created_at)}`;
+    return clonPost;
+}
+
+function changeDate(dayOfAddition) {
+    const newDate = new Date(dayOfAddition);
+
+    let date = newDate.getDate();
+    let month = newDate.getMonth();
+    let year = newDate.getFullYear();
+
+    if (date < 10) {
+        date = '0' + date;
+    }
+    if (month < 10) {
+        month = '0' + month;
+    }
+    return resultDate = date + '.' + month + '.' + year;
+}
+
+function changeTime(addingTime) {
+    const newDate = new Date(addingTime);
+
+    let hours = newDate.getHours();
+    let minutes = newDate.getMinutes();
+
+    if (hours < 10) {
+        hours = '0' + hours;
+    }
+    if (minutes < 10) {
+        minutes = '0' + minutes;
+    }
+
+    return resultTime = hours + ':' + minutes;
+}
+
+function emptyStringCheck() {
+    const postCommentText = document.querySelector(`#post-comment`).value;
+    if (postCommentText === '') {
+        return false;
+    }
+
+    const commentСontent = getComent(postCommentText, 'codegirl_school', 'https://c-gallery.polinashneider.space/images/avatar.svg', new Date);
+
+    commentsContent.append(commentСontent)
+    return true;
+}
 
 export function gettingPosts() {
 
@@ -36,95 +100,52 @@ export function gettingPosts() {
         .then((result) => {
             return result.json();
         })
-        .then((obj) => {
-            counter = obj.length;
+        .then((object) => {
+
+            counter = object.length;
             photoCount.textContent = `${counter}`;
 
-            obj.forEach((item) => {
-                const addPost = postAdd(item.image, item.likes, item.comments);
-                photosContent.append(addPost);
-
+            object.forEach((item) => {
+                const addPost = postAdd(item);
+                fragment.append(addPost);
+                photosContent.append(fragment)
                 addPost.addEventListener("click", () => {
-                    openModal(item.image, item.text, item.tags, resultDate, item.id, item.likes, item.comments.length);
-                });
-
-                function changeDate() {
-                    const newDate = new Date(item.created_at);
-
-                    let date = newDate.getDate();
-                    let month = newDate.getMonth();
-                    let year = newDate.getFullYear();
-
-                    if (date < 10) {
-                        date = '0' + date;
-                    }
-                    if (month < 10) {
-                        month = '0' + month;
-                    }
-                    return resultDate = date + '.' + month + '.' + year;
-                }
-                changeDate()
-
-                function changeTime() {
-                    const newDate = new Date(item.created_at);
-
-                    let hours = newDate.getHours();
-                    let minutes = newDate.getMinutes();
-
-                    if (hours < 10) {
-                        hours = '0' + hours;
-                    }
-                    if (minutes < 10) {
-                        minutes = '0' + minutes;
-                    }
-
-                    return resultTime = hours + ':' + minutes;
-                }
-                changeTime()
-
-                //Отображение комментариев
-                item.comments.forEach((item) => {
-                    const oneСomment = get(item.text, item.user.nickname, item.user.photo, item.created_at);
-                    commentsContent.append(oneСomment);
-
-                    function get(text, nickname, photo, time) {
-                        const clonPost = showComments.content.cloneNode(true);
-                        clonPost.querySelector(".comments__item-comment").textContent = text;
-                        clonPost.querySelector(".comments__item-nickname").textContent = nickname;
-                        clonPost.querySelector(".comments__item-avatar").src = photo;
-                        clonPost.querySelector(".comments__item-time").textContent = `${changeDate(time)} в ${changeTime(time)}`;
-                        return clonPost;
-                    }
+                    commentsContent.textContent = '';
+                    openModal(item, resultDate);
                 });
             });
 
-            function postAdd(image, likes, comments) {
-                const clonPost = postTemplate.content.firstElementChild.cloneNode(true);
-                clonPost.querySelector("img").src = image;
-                clonPost.querySelector(".likes span").textContent = likes;
-                clonPost.querySelector(".comments span").textContent = comments.length;
-                return clonPost;
-            }
+            function openModal(item) {
 
-            function openModal(image, text, tags, created_at, id, likes, comments_length) {
-                postPhoto.src = image;
-                postText.textContent = text;
-                postHashtags.textContent = tags;
-                infoTime.textContent = created_at;
-                statisticsLikesSpan.textContent = likes;
-                statisticsCommentsspan.textContent = comments_length;
-                const DELETE = `https://c-gallery.polinashneider.space/api/v1/users/me/posts/${id}/`;
-                const LIKE = `https://c-gallery.polinashneider.space/api/v1/posts/${id}/like/`;
+                function getId(parametr) {
+                    const id = parametr;
+                    return id
+                }
+                getId(item.id)
+
+                postPhoto.src = item.image;
+                postText.textContent = item.text;
+                postHashtags.textContent = item.tags;
+                infoTime.textContent = changeDate(item.created_at);
+                statisticsLikesSpan.textContent = item.likes;
+                statisticsCommentsspan.textContent = item.comments.length;
+
+                item.comments.forEach((item) => {
+                    changeDate(item.created_at);
+                    changeTime(item.created_at);
+                    //Отображение комментариев
+                    const commentСontent = getComent(item.text, item.user.nickname, item.user.photo, item.created_at);
+                    fragment.append(commentСontent);
+                    commentsContent.append(fragment)
+                });
 
                 //поставить лайк
                 faHeart.addEventListener('click', function() {
                     statisticsLikes.classList.add(`liked`);
-
                     const like = statisticsLikesSpan.value;
                     const formData = new FormData();
                     formData.append("likes", like);
-                    //поставить лайк
-                    fetch(LIKE, {
+                    fetch(`${ADDRESS_POST}${getId(item.id)}/like/`, {
                             method: "POST",
                             headers: {
                                 "Authorization": AUTHORIZATION,
@@ -135,14 +156,14 @@ export function gettingPosts() {
                             statisticsLikesSpan.textContent = ++statisticsLikesSpan.textContent;
                         })
                         .catch(() => {
-                            const addLikeError = notifyOfSuccess('Попробуйте в другой раз', '');
+                            const addLikeError = showТotification('Попробуйте в другой раз', '');
                             bodyOverlay.append(addLikeError);
                         })
                 });
 
                 //удаление поста
                 deletePost.addEventListener('click', function() {
-                    fetch(DELETE, {
+                    fetch(`${ADDRESS_GET}${getId(item.id)}/`, {
                             method: "DELETE",
                             headers: {
                                 "Authorization": AUTHORIZATION,
@@ -150,9 +171,8 @@ export function gettingPosts() {
                         })
                         .then(() => {
                             previewPostModal.classList.remove(`active`);
-                            const postDeleted = notifyOfSuccess('Пост успешно удален', '');
+                            const postDeleted = showТotification('Пост успешно удален', '');
                             bodyOverlay.append(postDeleted);
-
                             //перерисовка поста
                             fetch(ADDRESS_GET, {
                                     method: 'GET',
@@ -166,25 +186,29 @@ export function gettingPosts() {
                                 .then((data) => {
                                     photosContent.innerHTML = "";
                                     data.forEach((item) => {
-                                        const redrawPosts = postAdd(item.image, item.likes, item.comments);
-                                        photosContent.append(redrawPosts);
+                                        const redrawPosts = postAdd(item);
+                                        fragment.append(redrawPosts);
+                                        photosContent.append(fragment)
                                     });
                                 });
                         })
                         .catch(() => {
-                            alert('Попробуйте в другой раз');
+                            const redrawPostError = showТotification('Попробуйте в другой раз', '');
+                            bodyOverlay.append(redrawPostError);
                         })
                         .finally(() => {
                             body.classList.remove('with-overlay');
                         })
-                });
+                })
 
                 //написать комментарий 
                 function writeAcomment() {
+                    emptyStringCheck()
+
                     const postCommentText = postComment.value;
                     const formData = new FormData();
                     formData.append("text", postCommentText);
-                    formData.append("post", id);
+                    formData.append("post", getId(item.id));
                     fetch(COMMENTS, {
                             method: 'POST',
                             headers: {
@@ -195,19 +219,10 @@ export function gettingPosts() {
                         .then((result) => {
                             return result.json();
                         })
-                        .then(() => {
-                            const postCommentText = document.querySelector(`#post-comment`).value;
-                            if (postCommentText == '') {
-                                return false;
-                            } else {
-                                alert("Запись успешно внесена");
-                                //commentsItem.textContent = postCommentText;
-
-                            }
-                            return true;
-                        })
+                        .then(() => {})
                         .catch(() => {
-                            alert("Ошибка")
+                            const writeCommentError = showТotification('Попробуйте в другой раз', '');
+                            bodyOverlay.append(writeCommentError);
                         })
                         .finally(() => {
                             postComment.value = "";
@@ -215,7 +230,7 @@ export function gettingPosts() {
                 }
                 commentsButton.addEventListener("click", writeAcomment);
                 postComment.addEventListener("keydown", function(event) {
-                    if (event.key == 'Enter') {
+                    if (event.key === 'Enter') {
                         writeAcomment();
                     }
                 });
@@ -225,14 +240,13 @@ export function gettingPosts() {
                 previewPostModal.classList.add(`active`);
                 body.classList.add('with-overlay');
                 bodyOverlay.classList.add('active');
-            })
-        });
-
-    if (counter === 0) {
-        emptyContent.classList.remove(`hidden`);
-        photosContent.classList.add(`hidden`);
-    } else {
-        emptyContent.classList.add(`hidden`);
-        photosContent.classList.remove(`hidden`);
-    }
+            });
+            if (counter === 0) {
+                emptyContent.classList.remove(`hidden`);
+                photosContent.classList.add(`hidden`);
+            } else {
+                emptyContent.classList.add(`hidden`);
+                photosContent.classList.remove(`hidden`);
+            }
+        })
 }
