@@ -25,8 +25,7 @@ const showComments = document.querySelector('#show_comments');
 let resultDate = null;
 let resultTime = null;
 const fragment = new DocumentFragment();
-//const DELETE = `https://c-gallery.polinashneider.space/api/v1/users/me/posts/${id}/`;
-//const LIKE = `https://c-gallery.polinashneider.space/api/v1/posts/${id}/like/`;
+const commentAvatar = 'https://c-gallery.polinashneider.space/images/avatar.svg';
 
 function postAdd(item) {
     const clonPost = postTemplate.content.firstElementChild.cloneNode(true);
@@ -45,36 +44,29 @@ function getComent(text, nickname, photo, created_at) {
     return clonPost;
 }
 
+function addZero(variable) {
+    if (variable < 10) {
+        variable = '0' + variable;
+        return variable
+    }
+    return variable
+}
+
 function changeDate(dayOfAddition) {
     const newDate = new Date(dayOfAddition);
-
     let date = newDate.getDate();
     let month = newDate.getMonth();
     let year = newDate.getFullYear();
 
-    if (date < 10) {
-        date = '0' + date;
-    }
-    if (month < 10) {
-        month = '0' + month;
-    }
-    return resultDate = date + '.' + month + '.' + year;
+    return resultDate = addZero(date) + '.' + addZero(month) + '.' + addZero(year);
 }
 
 function changeTime(addingTime) {
     const newDate = new Date(addingTime);
-
     let hours = newDate.getHours();
     let minutes = newDate.getMinutes();
 
-    if (hours < 10) {
-        hours = '0' + hours;
-    }
-    if (minutes < 10) {
-        minutes = '0' + minutes;
-    }
-
-    return resultTime = hours + ':' + minutes;
+    return resultTime = addZero(hours) + ':' + addZero(minutes);
 }
 
 function emptyStringCheck() {
@@ -82,15 +74,12 @@ function emptyStringCheck() {
     if (postCommentText === '') {
         return false;
     }
-
-    const commentСontent = getComent(postCommentText, 'codegirl_school', 'https://c-gallery.polinashneider.space/images/avatar.svg', new Date);
-
+    const commentСontent = getComent(postCommentText, 'codegirl_school', commentAvatar, new Date());
+    statisticsCommentsspan.textContent = ++statisticsCommentsspan.textContent;
     commentsContent.append(commentСontent)
-    return true;
 }
 
 export function gettingPosts() {
-
     fetch(ADDRESS_GET, {
             method: 'GET',
             headers: {
@@ -101,7 +90,6 @@ export function gettingPosts() {
             return result.json();
         })
         .then((object) => {
-
             counter = object.length;
             photoCount.textContent = `${counter}`;
 
@@ -116,13 +104,6 @@ export function gettingPosts() {
             });
 
             function openModal(item) {
-
-                function getId(parametr) {
-                    const id = parametr;
-                    return id
-                }
-                getId(item.id)
-
                 postPhoto.src = item.image;
                 postText.textContent = item.text;
                 postHashtags.textContent = item.tags;
@@ -145,7 +126,7 @@ export function gettingPosts() {
                     const like = statisticsLikesSpan.value;
                     const formData = new FormData();
                     formData.append("likes", like);
-                    fetch(`${ADDRESS_POST}${getId(item.id)}/like/`, {
+                    fetch(`${ADDRESS_POST}${item.id}/like/`, {
                             method: "POST",
                             headers: {
                                 "Authorization": AUTHORIZATION,
@@ -163,7 +144,7 @@ export function gettingPosts() {
 
                 //удаление поста
                 deletePost.addEventListener('click', function() {
-                    fetch(`${ADDRESS_GET}${getId(item.id)}/`, {
+                    fetch(`${ADDRESS_GET}${item.id}/`, {
                             method: "DELETE",
                             headers: {
                                 "Authorization": AUTHORIZATION,
@@ -204,11 +185,10 @@ export function gettingPosts() {
                 //написать комментарий 
                 function writeAcomment() {
                     emptyStringCheck()
-
                     const postCommentText = postComment.value;
                     const formData = new FormData();
                     formData.append("text", postCommentText);
-                    formData.append("post", getId(item.id));
+                    formData.append("post", item.id);
                     fetch(COMMENTS, {
                             method: 'POST',
                             headers: {
@@ -219,7 +199,6 @@ export function gettingPosts() {
                         .then((result) => {
                             return result.json();
                         })
-                        .then(() => {})
                         .catch(() => {
                             const writeCommentError = showТotification('Попробуйте в другой раз', '');
                             bodyOverlay.append(writeCommentError);
