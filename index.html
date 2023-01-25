@@ -37,7 +37,6 @@
             <div class="photos__info">
                 <span class="photos__info-title">Фото</span>
                 <span><span id="photo-count">0</span> публикаций</span>
-
             </div>
             <div class="empty-content photos__empty-content hidden">
                 <img class="empty-content__placeholder" src="./assets/photos.svg" />
@@ -46,6 +45,8 @@
                 <button type="button" id="add-first-post" class="empty-content__button">
             Создать публикацию
           </button>
+            </div>
+            <div class="photos__content">
         </main>
         <footer class="footer">© 2022 codegirl_school</footer>
         <!-- Add post modal start -->
@@ -81,7 +82,6 @@
                 <button class="add-post-modal__button-publish" id="post-publish" type="button">
             Опубликовать
           </button>
-
             </div>
         </div>
         <!-- Add post modal end -->
@@ -91,7 +91,6 @@
             <div class="modal__header edit-bio-modal__header">
                 Персональные данные
             </div>
-
             <div class="modal__content">
                 <div class="account-info">
                     <img src="./assets/avatar-small.svg" alt="codegirl_school" />
@@ -126,7 +125,6 @@
                 <button id="bio-discard" class="edit-bio-modal__button-cancel" type="button">
             Отменить
           </button>
-
             </div>
         </div>
         <!-- Edit bio modal end -->
@@ -143,7 +141,6 @@
                 </div>
                 <button type="button" id="delete-post" class="delete-post-button">Удалить</button>
             </div>
-
             <div class="modal__content">
                 <img id="post-photo" width="440" src="./img/photo-post.jpg" alt="" />
                 <div class="statistics">
@@ -155,11 +152,35 @@
               <i class="fa fa-comment"></i>
               <span>0</span>
                     </span>
+                </div>
+                <p class="post-text">
+                    Неожиданный вопрос, правда? Кажется, что HTML и CSS — инструмент разработчиков и верстальщиков. Но на самом деле есть и другие профессии, которым приходится иметь дело с кодом 👌.
+                </p>
+                <p class="post-hashtags">
+                    <a href="#">#itaкурсы</a>
+                    <a href="#">#сменитьпрофессию</a> <a href="#">#новаяпрофессия</a>
+                    <a href="#">#itпрофессии</a> <a href="#">#itпрофессии</a>
+                </p>
+                <div class="comments">
+                    <div class="comments__content">
 
+                    </div>
+                </div>
+
+                <div class="comments__add">
+                    <img src="./assets/avatar-small.svg" alt="" />
+                    <textarea rows="1" name="post-comment" id="post-comment" placeholder="Добавить комментарий"></textarea>
+                    <button type="button" class="comments-button">
+                        <i class="fa fa-paper-plane"></i>
+                        </button>
+                </div>
+            </div>
+        </div>
+        </div>
+        <!-- Preview post modal end -->
     </div>
     <!-- Alert notifications start -->
     <template id="alert-success">
-
       <div class="alert alert--success">
         <div class="alert__ellipsis"></div>
         <div class="alert__icon">
@@ -171,7 +192,7 @@
         </div>
       </div>
     </template>
-        <template id="alert-fail">
+    <template id="alert-fail">
       <div class="alert alert--error hidden">
         <div class="alert__ellipsis"></div>
         <div class="alert__icon">
@@ -183,10 +204,10 @@
         </div>
       </div>
     </template>
-        <!-- Alert notifications end -->
+    <!-- Alert notifications end -->
 
-        <!-- Grid post template start -->
-        <template id="post-template">
+    <!-- Grid post template start -->
+    <template id="post-template">
       <div class="post">
             <img src="" />
             <div class="overlay">
@@ -203,7 +224,24 @@
         </div>
       </div>
     </template>
+    <!-- Grid post template start -->
 
+    <!-- Show comments template end -->
+    <template id="show_comments">
+          
+                <div class="comments__item">
+                
+                    <img class="comments__item-avatar" src="./assets/sample-avatar.jpg" width="40" alt="" />
+                    <div class="comments__item-text">
+                        <h3 class="comments__item-nickname"></h3>
+                        <p class="comments__item-comment"></p>
+                        <span class="comments__item-time"></span>
+                    </div>
+                </div>
+           
+        </template>
+    <!-- Show comments  template end -->
+    <script type="module" src="scripts/main.js"></script>
 </body>
 
 </html>
