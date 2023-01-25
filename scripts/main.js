@@ -57,7 +57,7 @@ export function showТotification(header, paragraf) {
     success.querySelector('h4').textContent = header;
     success.querySelector('p').textContent = paragraf;
 
-    setTimeout(() => {
+    const cancelNotification = setTimeout(() => {
         bodyOverlay.remove();
     }, 2000);
 

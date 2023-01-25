@@ -25,7 +25,7 @@ const showComments = document.querySelector('#show_comments');
 let resultDate = null;
 let resultTime = null;
 const fragment = new DocumentFragment();
-const commentAvatar = 'https://c-gallery.polinashneider.space/images/avatar.svg';
+const COMMENT_AVATAR = 'https://c-gallery.polinashneider.space/images/avatar.svg';
 
 function postAdd(item) {
     const clonPost = postTemplate.content.firstElementChild.cloneNode(true);
@@ -54,17 +54,17 @@ function addZero(variable) {
 
 function changeDate(dayOfAddition) {
     const newDate = new Date(dayOfAddition);
-    let date = newDate.getDate();
-    let month = newDate.getMonth();
-    let year = newDate.getFullYear();
+    const date = newDate.getDate();
+    const month = newDate.getMonth();
+    const year = newDate.getFullYear();
 
     return resultDate = addZero(date) + '.' + addZero(month) + '.' + addZero(year);
 }
 
 function changeTime(addingTime) {
     const newDate = new Date(addingTime);
-    let hours = newDate.getHours();
-    let minutes = newDate.getMinutes();
+    const hours = newDate.getHours();
+    const minutes = newDate.getMinutes();
 
     return resultTime = addZero(hours) + ':' + addZero(minutes);
 }
@@ -72,9 +72,9 @@ function changeTime(addingTime) {
 function emptyStringCheck() {
     const postCommentText = document.querySelector(`#post-comment`).value;
     if (postCommentText === '') {
-        return false;
+        return
     }
-    const commentСontent = getComent(postCommentText, 'codegirl_school', commentAvatar, new Date());
+    const commentСontent = getComent(postCommentText, 'codegirl_school', COMMENT_AVATAR, new Date());
     statisticsCommentsspan.textContent = ++statisticsCommentsspan.textContent;
     commentsContent.append(commentСontent)
 }
@@ -91,7 +91,7 @@ export function gettingPosts() {
         })
         .then((object) => {
             counter = object.length;
-            photoCount.textContent = `${counter}`;
+            photoCount.textContent = counter;
 
             object.forEach((item) => {
                 const addPost = postAdd(item);
