@@ -1,10 +1,13 @@
+export { AUTHORIZATION, ADDRESS_POST, ADDRESS_GET, body, bodyOverlay, COMMENTS, alertSuccess, previewPostModal }
+import { photoCount, gettingPosts } from './getting-posts.js'
+
+
+
 const postModal = document.querySelector(`.add-post-modal`);
 const addPost = document.querySelector(`#add-photo`);
 const createApost = document.querySelector(`#add-first-post`);
-
 const body = document.querySelector(`body`);
 const bodyOverlay = document.querySelector(`.body-overlay`);
-
 const step1 = document.querySelector(`.add-post-modal__step-1`);
 const step2 = document.querySelector(`.add-post-modal__step-2`);
 const modalFooter = document.querySelector(`.modal__footer`);
@@ -22,15 +25,15 @@ const ADDRESS_POST = "https://c-gallery.polinashneider.space/api/v1/posts/";
 const ADDRESS_GET = "https://c-gallery.polinashneider.space/api/v1/users/me/posts/";
 const COMMENTS = "https://c-gallery.polinashneider.space/api/v1/comments/";
 
-export { AUTHORIZATION, ADDRESS_POST, ADDRESS_GET, body, bodyOverlay, COMMENTS }
 
 addPost.addEventListener('click', openModalWindow);
 createApost.addEventListener('click', openModalWindow);
 
+
 function openModalWindow() {
     body.classList.add(`with-overlay`);
-    postModal.classList.add(`active`);
     bodyOverlay.classList.add(`active`);
+    postModal.classList.add(`active`);
     fileUpload.accept = ".png, .jpg, .jpeg";
 }
 
@@ -51,20 +54,17 @@ fileUpload.addEventListener('change', () => {
     }
 });
 
-export function showТotification(header, paragraf) {
-    const success = alertSuccess.content.cloneNode(true);
-
+export function showТotification(type, header, paragraf) {
+    const messageFail = type;
+    const success = messageFail.content.firstElementChild.cloneNode(true);
     success.querySelector('h4').textContent = header;
     success.querySelector('p').textContent = paragraf;
-
-
+    document.body.append(success);
     const cancelNotification = setTimeout(() => {
-        bodyOverlay.remove();
+        success.remove();
     }, 2000);
-
-    return success
+    return cancelNotification
 }
-
 
 publish.addEventListener("click", () => {
     const text = postText.value;
@@ -83,12 +83,13 @@ publish.addEventListener("click", () => {
         })
         .then(() => {
             postModal.classList.remove("active");
-            const notificationTextSuccess = showТotification('Фото успешно добавлено', '');
-            bodyOverlay.append(notificationTextSuccess);
+            body.classList.remove(`with-overlay`);
+            bodyOverlay.classList.remove(`active`);
+            showТotification(alertSuccess, 'Фото успешно добавлено', '');
+            photoCount.textContent = ++photoCount.textContent;
         })
         .catch(() => {
-            const noticeTextError = showТotification('Произошла ошибка при добавлении фото', 'Повторите попытку');
-            bodyOverlay.append(noticeTextError);
+            showТotification(alertSuccess, 'Произошла ошибка при добавлении фото', 'Повторите попытку');
         })
         .finally(() => {
             fileUpload.value = "";
@@ -102,5 +103,4 @@ publish.addEventListener("click", () => {
         })
 })
 
-import { gettingPosts } from './getting-posts.js';
 gettingPosts();

@@ -1,5 +1,10 @@
-import { AUTHORIZATION, ADDRESS_POST, ADDRESS_GET, body, bodyOverlay, COMMENTS } from './main.js'
-import { showТotification } from './main.js';
+import { AUTHORIZATION, ADDRESS_POST, ADDRESS_GET, body, bodyOverlay, COMMENTS, alertSuccess, showТotification } from './main.js'
+
+import { writeAcomment } from './write-a-comment.js';
+import { deleteAPost } from './delete-post.js';
+
+
+export { photoCount, commentsContent, COMMENT_AVATAR, statisticsCommentsSpan, postComment, commentsButton, currenPostId, photosContent, fragment }
 const emptyContent = document.querySelector(`.empty-content`);
 const photosContent = document.querySelector(`.photos__content`);
 const postTemplate = document.querySelector(`#post-template`);
@@ -18,16 +23,19 @@ const statisticsLikesSpan = document.querySelector(`.statistics__likes span`);
 
 const commentsContent = document.querySelector(`.comments__content`);
 const commentsItem = document.querySelector(`.comments__item`);
-const statisticsCommentsspan = document.querySelector(`.statistics__comments span`);
-const postComment = document.querySelector(`#post-comment`);
+const statisticsCommentsSpan = document.querySelector(`.statistics__comments span`);
+
 const commentsButton = document.querySelector(`.comments-button`);
 const showComments = document.querySelector('#show_comments');
+const postComment = document.querySelector(`#post-comment`);
 let resultDate = null;
 let resultTime = null;
 const fragment = new DocumentFragment();
 const COMMENT_AVATAR = 'https://c-gallery.polinashneider.space/images/avatar.svg';
+let currenPostId = null;
 
-function postAdd(item) {
+
+export function postAdd(item) {
     const clonPost = postTemplate.content.firstElementChild.cloneNode(true);
     clonPost.querySelector("img").src = item.image;
     clonPost.querySelector(".likes span").textContent = item.likes;
@@ -35,7 +43,7 @@ function postAdd(item) {
     return clonPost;
 }
 
-function getComent(text, nickname, photo, created_at) {
+export function getComent(text, nickname, photo, created_at) {
     const clonPost = showComments.content.cloneNode(true);
     clonPost.querySelector(".comments__item-comment").textContent = text;
     clonPost.querySelector(".comments__item-nickname").textContent = nickname;
@@ -57,7 +65,6 @@ function changeDate(dayOfAddition) {
     const date = newDate.getDate();
     const month = newDate.getMonth();
     const year = newDate.getFullYear();
-
     return resultDate = addZero(date) + '.' + addZero(month) + '.' + addZero(year);
 }
 
@@ -65,18 +72,7 @@ function changeTime(addingTime) {
     const newDate = new Date(addingTime);
     const hours = newDate.getHours();
     const minutes = newDate.getMinutes();
-
     return resultTime = addZero(hours) + ':' + addZero(minutes);
-}
-
-function emptyStringCheck() {
-    const postCommentText = document.querySelector(`#post-comment`).value;
-    if (postCommentText === '') {
-        return
-    }
-    const commentСontent = getComent(postCommentText, 'codegirl_school', COMMENT_AVATAR, new Date());
-    statisticsCommentsspan.textContent = ++statisticsCommentsspan.textContent;
-    commentsContent.append(commentСontent)
 }
 
 export function gettingPosts() {
@@ -97,6 +93,7 @@ export function gettingPosts() {
                 const addPost = postAdd(item);
                 fragment.append(addPost);
                 photosContent.append(fragment)
+                    //Здесь обработчики добавляются в цикле — не будет зачтен критерий про делегирование. Но в принципе можешь оставить текущий вариант.
                 addPost.addEventListener("click", () => {
                     commentsContent.textContent = '';
                     openModal(item, resultDate);
@@ -109,7 +106,8 @@ export function gettingPosts() {
                 postHashtags.textContent = item.tags;
                 infoTime.textContent = changeDate(item.created_at);
                 statisticsLikesSpan.textContent = item.likes;
-                statisticsCommentsspan.textContent = item.comments.length;
+                statisticsCommentsSpan.textContent = item.comments.length;
+                currenPostId = item.id;
 
                 item.comments.forEach((item) => {
                     changeDate(item.created_at);
@@ -119,113 +117,56 @@ export function gettingPosts() {
                     fragment.append(commentСontent);
                     commentsContent.append(fragment)
                 });
-
-                //поставить лайк
-                faHeart.addEventListener('click', function() {
-                    statisticsLikes.classList.add(`liked`);
-                    const like = statisticsLikesSpan.value;
-                    const formData = new FormData();
-                    formData.append("likes", like);
-                    fetch(`${ADDRESS_POST}${item.id}/like/`, {
-                            method: "POST",
-                            headers: {
-                                "Authorization": AUTHORIZATION,
-                            },
-                            body: formData,
-                        })
-                        .then(() => {
-                            statisticsLikesSpan.textContent = ++statisticsLikesSpan.textContent;
-                        })
-                        .catch(() => {
-                            const addLikeError = showТotification('Попробуйте в другой раз', '');
-                            bodyOverlay.append(addLikeError);
-                        })
-                });
-
-                //удаление поста
-                deletePost.addEventListener('click', function() {
-                    fetch(`${ADDRESS_GET}${item.id}/`, {
-                            method: "DELETE",
-                            headers: {
-                                "Authorization": AUTHORIZATION,
-                            },
-                        })
-                        .then(() => {
-                            previewPostModal.classList.remove(`active`);
-                            const postDeleted = showТotification('Пост успешно удален', '');
-                            bodyOverlay.append(postDeleted);
-                            //перерисовка поста
-                            fetch(ADDRESS_GET, {
-                                    method: 'GET',
-                                    headers: {
-                                        "Authorization": AUTHORIZATION,
-                                    },
-                                })
-                                .then((result) => {
-                                    return result.json();
-                                })
-                                .then((data) => {
-                                    photosContent.innerHTML = "";
-                                    data.forEach((item) => {
-                                        const redrawPosts = postAdd(item);
-                                        fragment.append(redrawPosts);
-                                        photosContent.append(fragment)
-                                    });
-                                });
-                        })
-                        .catch(() => {
-                            const redrawPostError = showТotification('Попробуйте в другой раз', '');
-                            bodyOverlay.append(redrawPostError);
-                        })
-                        .finally(() => {
-                            body.classList.remove('with-overlay');
-                        })
-                })
-
-                //написать комментарий 
-                function writeAcomment() {
-                    emptyStringCheck()
-                    const postCommentText = postComment.value;
-                    const formData = new FormData();
-                    formData.append("text", postCommentText);
-                    formData.append("post", item.id);
-                    fetch(COMMENTS, {
-                            method: 'POST',
-                            headers: {
-                                'Authorization': AUTHORIZATION
-                            },
-                            body: formData,
-                        })
-                        .then((result) => {
-                            return result.json();
-                        })
-                        .catch(() => {
-                            const writeCommentError = showТotification('Попробуйте в другой раз', '');
-                            bodyOverlay.append(writeCommentError);
-                        })
-                        .finally(() => {
-                            postComment.value = "";
-                        })
-                }
-                commentsButton.addEventListener("click", writeAcomment);
-                postComment.addEventListener("keydown", function(event) {
-                    if (event.key === 'Enter') {
-                        writeAcomment();
-                    }
-                });
-            }
-
-            photosContent.addEventListener('click', function() {
-                previewPostModal.classList.add(`active`);
-                body.classList.add('with-overlay');
-                bodyOverlay.classList.add('active');
-            });
-            if (counter === 0) {
-                emptyContent.classList.remove(`hidden`);
-                photosContent.classList.add(`hidden`);
-            } else {
-                emptyContent.classList.add(`hidden`);
-                photosContent.classList.remove(`hidden`);
             }
         })
+}
+
+
+//написать комментарий
+commentsButton.addEventListener("click", writeAcomment);
+postComment.addEventListener("keydown", function(event) {
+    event.key === 'Enter';
+    writeAcomment();
+
+});
+
+faHeart.addEventListener('click', function() {
+    if (statisticsLikes.classList.contains('liked')) {
+        return
+    }
+    const like = statisticsLikesSpan.value;
+    const formData = new FormData();
+    formData.append("likes", like);
+    fetch(`${ADDRESS_POST}${currenPostId}/like/`, {
+            method: "POST",
+            headers: {
+                "Authorization": AUTHORIZATION,
+            },
+            body: formData,
+        })
+        .then(() => {
+            statisticsLikesSpan.textContent = ++statisticsLikesSpan.textContent;
+        })
+        .catch(() => {
+            showТotification(alertSuccess, 'Попробуйте в другой раз', '');
+        })
+});
+
+//удаление поста
+deletePost.addEventListener('click', deleteAPost);
+
+
+
+photosContent.addEventListener('click', function() {
+    previewPostModal.classList.add(`active`);
+    body.classList.add('with-overlay');
+    bodyOverlay.classList.add('active');
+});
+
+if (counter === 0) {
+    emptyContent.classList.remove(`hidden`);
+    photosContent.classList.add(`hidden`);
+} else {
+    emptyContent.classList.add(`hidden`);
+    photosContent.classList.remove(`hidden`);
 }
