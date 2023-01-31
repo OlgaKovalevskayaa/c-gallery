@@ -125,9 +125,9 @@ export function gettingPosts() {
 //написать комментарий
 commentsButton.addEventListener("click", writeAcomment);
 postComment.addEventListener("keydown", function(event) {
-    event.key === 'Enter';
-    writeAcomment();
-
+    if (event.key === 'Enter') {
+        writeAcomment();
+    }
 });
 
 faHeart.addEventListener('click', function() {
@@ -154,8 +154,6 @@ faHeart.addEventListener('click', function() {
 
 //удаление поста
 deletePost.addEventListener('click', deleteAPost);
-
-
 
 photosContent.addEventListener('click', function() {
     previewPostModal.classList.add(`active`);
